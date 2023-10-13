@@ -1,0 +1,51 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.9;
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract Report is Ownable {
+    struct DataReport {
+        string jenisSampah;
+        string jenisPermohonan;
+    }
+
+    uint256 public noLaporan;
+    mapping(uint256 => DataReport) public dataReport;
+
+    event NewDataReport(
+        uint256 indexed noLaporan,
+        string jenisSampah,
+        string jenisPermohonan
+    );
+
+    // Pass the initialOwner address to the Ownable constructor
+    constructor() Ownable(msg.sender) {}
+
+    function newDataReport(
+        string memory _jenisSampah,
+        string memory _jenisPermohonan
+    ) external onlyOwner {
+        noLaporan++;
+        dataReport[noLaporan] = DataReport(
+            _jenisSampah,
+            _jenisPermohonan
+        );
+
+        emit NewDataReport(
+            noLaporan,
+            _jenisSampah,
+            _jenisPermohonan
+        );
+    }
+
+    function getDataReportByNoLaporan(uint256 _noLaporan) external view returns (
+        string memory jenisSampah,
+        string memory jenisPermohonan
+    ) {
+        require(_noLaporan > 0 && _noLaporan <= noLaporan, "Invalid report number");
+        DataReport memory report = dataReport[_noLaporan];
+        return (
+            report.jenisSampah,
+            report.jenisPermohonan
+        );
+    }
+}
